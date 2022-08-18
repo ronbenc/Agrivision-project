@@ -1,0 +1,19 @@
+
+C:\alon\agri_vision_1\AgriVision-master\venv\Scripts\python.exe C:/alon/agri_vision_1/AgriVision-master/test.py --cfg config/agri-test.yaml
+Traceback (most recent call last):
+  File "C:/alon/agri_vision_1/AgriVision-master/test.py", line 24, in <module>
+    from model.deeplab import DeepLab
+  File "C:\alon\agri_vision_1\AgriVision-master\model\__init__.py", line 1, in <module>
+    from .criterion import *
+ModuleNotFoundError: No module named 'model.criterion'
+
+from pytorch_model_summary import summary
+print(summary(model, torch.zeros((1, 4, 512, 512)), show_input=True))
+
+python gen_odgt.py -r data -d C://alon/AgriVision/Agriculture-Vision/train -o data/agri-trn.odgt
+python gen_odgt.py -r data -d C://alon/AgriVision/Agriculture-Vision/val -o data/agri-val.odgt
+python gen_odgt.py -r data -d C://alon/AgriVision/Agriculture-Vision/test -o data/agri-test.odgt -t
+head -n 100 data/agri-trn.odgt > data/agri-debug.odgt
+
+
+

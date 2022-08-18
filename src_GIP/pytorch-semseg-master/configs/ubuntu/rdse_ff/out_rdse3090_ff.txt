@@ -1,0 +1,52 @@
+RUNDIR: runs/rdse_3090ff/2021_10_15_11_27_31_agri6_ff_rdse3090_7a_agct0
+Found 72470 train images
+agct loader - using initial coeffs
+Found 849 val images
+agct loader - using initial coeffs
+Using correct_block :  None
+agct module - using initial coeffs
+Let's use 3 GPUs!
+Iter [50/20000]  Loss: 1.7007  Time/Image: 0.0233
+Iter [100/20000]  Loss: 1.0416  Time/Image: 0.0212
+Overall Acc: 	 0.8270126654496834
+Mean Acc : 	 0.14284733719605922
+FreqW Acc : 	 0.6884365596319518
+Mean IoU : 	 0.11899775393203164
+Iter [150/20000]  Loss: 0.8988  Time/Image: 0.0206
+Iter [200/20000]  Loss: 0.8653  Time/Image: 0.0209
+Overall Acc: 	 0.8285324933639371
+Mean Acc : 	 0.20736786336107646
+FreqW Acc : 	 0.7022861774932991
+Mean IoU : 	 0.1714419947955025
+Iter [250/20000]  Loss: 0.8166  Time/Image: 0.0210
+Iter [300/20000]  Loss: 0.6731  Time/Image: 0.0210
+Overall Acc: 	 0.8243931482379121
+Mean Acc : 	 0.24837139043638742
+FreqW Acc : 	 0.709997643189858
+Mean IoU : 	 0.2025421129782111
+Iter [350/20000]  Loss: 0.6310  Time/Image: 0.0210
+Iter [400/20000]  Loss: 0.6449  Time/Image: 0.0209
+Overall Acc: 	 0.8415547382345598
+Mean Acc : 	 0.2513044832684462
+FreqW Acc : 	 0.7254058725463824
+Mean IoU : 	 0.2103060955956438
+Iter [450/20000]  Loss: 0.6550  Time/Image: 0.0207
+Iter [500/20000]  Loss: 0.6533  Time/Image: 0.0199
+Overall Acc: 	 0.8428567515768567
+Mean Acc : 	 0.29537718866510504
+FreqW Acc : 	 0.7312196762114481
+Mean IoU : 	 0.2377815157007064
+Iter [550/20000]  Loss: 0.6622  Time/Image: 0.0175
+Iter [600/20000]  Loss: 0.4888  Time/Image: 0.0185
+Overall Acc: 	 0.8324443152054304
+Mean Acc : 	 0.38034201690623565
+FreqW Acc : 	 0.7351303133914745
+Mean IoU : 	 0.27269885464115856
+Iter [650/20000]  Loss: 0.5626  Time/Image: 0.0208
+Iter [700/20000]  Loss: 0.4975  Time/Image: 0.0215
+Overall Acc: 	 0.8449902608983654
+Mean Acc : 	 0.3891819730149459
+FreqW Acc : 	 0.7428122967842725
+Mean IoU : 	 0.276312887512324
+Iter [750/20000]  Loss: 0.5590  Time/Image: 0.0219
+Iter [800/20000]  Loss: 0.4776  Time/Image: 0.0210

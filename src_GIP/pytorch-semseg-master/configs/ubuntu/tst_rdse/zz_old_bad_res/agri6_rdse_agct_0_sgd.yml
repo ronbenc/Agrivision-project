@@ -1,0 +1,93 @@
+model:
+    arch: rdse_net
+    n_maps: [16,32,64,128,256]    # [16,32,64,128,256]  # [8,16,32,64,128]
+    atrous_dilations: [1,2,4,8]
+    atrous_layers: [0,0]  # [2,2]
+    atrous_kernel_size: [3,3] # [5,3]
+    rd_layers: [5,5,5,5,5]
+    se_reduction: [8,8,8,8,8]  # [16,16,16,16,16]
+data:
+    dataset: agrivision6    # agrivision6Loader_agct
+    path: /home/alz/datasets/Agriculture-Vision/
+    train_split: train  
+    val_split: val      
+    test_split: test
+    train_img_list: configs/agri2020_train_3888.txt  # configs/agri2020_train_ep_3888.txt
+    val_img_list: configs/agri2020_val_862.txt        # configs/agri2020_val_all.txt
+    test_img_list: configs/agri2020_test_all.txt
+    img_rows: 512
+    img_cols: 512
+    n_channels: 5
+    channel_vector: [1,1,1,1,1]    
+training:
+    run_dir: runs/tst_rdse
+    pretrained_model:  # runs/tst3d/atr_best/agrivision6_best_model.pkl   #     
+    saved_model: agrivision6_best_model.pkl
+    train_iters: 10000  # 10000
+    val_interval: 100   # 50
+    print_interval: 50  # 10
+    batch_size: 6
+    n_workers: 4
+    optimizer:
+        name: 'sgd'
+        lr: 1.0e-2
+        #momentum: 0.99
+        #weight_decay: 0.0005
+    loss:
+        #name: 'cross_entropy'
+        names:
+            cross_entropy: 1.0
+            mean_iou: 0.0
+            mean_iou_softmax: 0.0
+            lovasz: 0.0
+            focal: 0.0
+        reduction: 'mean'
+        ignore_index: 7
+        class_weights: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # [1.00, 1.01, 10.02, 10.03, 1.04, 1.05, 1.06]  
+    lr_schedule:
+        #step_size: 100
+        #gamma: 0.1    
+    augmentations:
+        basic:
+            saturation: 0.05    #[saturation varied in 1-x to 1+x]
+            hue: 0.05           #[hue varied in -x to x]
+            brightness: 0.05    #[brightness varied in 1-x to 1+x]
+            gamma: 0.05         #[gamma varied in 1 to 1+x]
+            contrast: 0.05      #[contrast varied in 1-x to 1+x]
+            rotate: 180         #[rotate -d to d degrees]
+            shear: 10           # [shear value -s to s]
+            scale: [0.9, 1.4]   #[scale in range (s_min, s_max)]
+            translate: [32, 32] #[translation by max (du, dv)]
+            hflip: 0.5          #[flip horizontally with chance p]           
+        collage:
+            n_patches: 7
+validation:
+    is_test: 0   # 0 1
+    img_list: configs/agri2020_val_small.txt
+    model: runs/tst_agct4/ub_1/agrivision6_best_model.pkl
+    out_dir: runs/tst_agct4/ub_1/tst_1    # zz_all_r4  # out1_val_all_exp23_t2 # out1_val_small_1
+    out_pics: 1     # 0 - none; 1 - rgb,nir,ndvi,pred,gt; 2 - pred_raw,pred_smooth,gt
+    num_rotations: 0
+misc:        
+    random_seed: 2357
+debug_info:
+    save_training_images: 0
+    save_training_dir: runs/zz_debug_pics1   
+agct: 
+    n_channels: 6
+    vegetation_labels: ['ndvi', 'savi', 'evi', 'gndvi', 'gci', 'sipi', 'free', 'dummy', 'dummy']    
+    alpha_trained: runs/blabla   # runs/tst_agct/ub_1/best_agct_vals.txt
+    alpha_coeffs: [[-1.0, 0.0, 0.0, 1.0, 0.0,    1.0, 0.0, 0.0, 1.0, 0.0],   # ~NDVI [RGBN0-nomin RGBN0-denom]
+                    [-2.0, 0.0, 0.0, 2.0, 0.0,   1.0, 0.0, 0.0, 1.0, 1.0],  # ~SAVI, note multiply by (L+1) 
+                    [-2.5, 0.0, 0.0, 2.5, 0.0,   6.0, 0.0, 7.5, 1.0, 1.0],  # ~EVI
+                    [0.0, -1.0, 0.0, 1.0, 0.0,   0.0, 1.0, 0.0, 1.0, 0.0],   # ~greenNDVI                     
+                    [0.0, -1.0, 0.0, 1.0, 0.0,   0.0, 1.0, 0.0, 0.0, 0.0],  # ~GCI                     
+                    [0.0, 0.0, -1.0, 1.0, 0.0,   -1.0, 0.0, 0.0, 1.0, 0.0], # ~SIPI 
+                    
+                    [0.01, 0.01, 0.01, 0.01, 0.01,   1.0, 1.0, 1.0, 1.0, 1.0], # "free"
+                    [-12.3, 0.0, 0.0, 17.4, 0.0,   7.4, 0.0, 0.0, -9.6, 0.0],  # dummy
+                    [0.18, 0.0, 0.0, -1.7, 0.0,   13.7, 0.0, 0.0, 0.45, 0.0]]  # dummy
+    lr: [1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2]
+    dynamic_vals: 0    # 0-fixed,  1 - dynamic
+    print_vals: 2 # 0-no, 1-weights, 2-weights and gradients
+        

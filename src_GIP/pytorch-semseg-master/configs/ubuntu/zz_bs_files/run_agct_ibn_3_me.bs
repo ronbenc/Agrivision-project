@@ -1,0 +1,14 @@
+#!/bin/bash 
+#SBATCH -N 1 # number of minimum nodes 
+#SBATCH -c 8 # number of cores 
+#SBATCH --gres=gpu:2080ti:1 # Request 1 gpu 
+#SBATCH --mail-user=salz@cs.technion.ac.il 
+#SBATCH --mail-type=ALL # Valid values are NONE, BEGIN, END, FAIL, REQUEUE, ALL 
+#SBATCH --job-name="agri_sem_seg" 
+#SBATCH -o zz/out_agct3me2.txt # stdout goes here 
+#SBATCH -e zz/err_agct3me2.txt # stderr goes here 
+
+source /home/alz/miniconda3/etc/profile.d/conda.sh 
+conda activate agri_venv 
+python train_agct.py --config configs/tst_agct/agri6_agct_ibn_3a_2_me3.yml
+python train_agct.py --config configs/tst_agct/agri6_agct_ibn_3a_2_me4.yml

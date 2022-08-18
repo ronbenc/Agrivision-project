@@ -1,0 +1,53 @@
+
+pip install torch==1.8.0+cu101 torchvision==0.9.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+pip install torch==1.7.0+cu101 torchvision==0.8.1+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+
+train
+C:\alon\seg_test_1\pytorch-semseg-master\train.py
+--config configs/zz_cityscapes_1.yml
+--config configs/agrivision6_unet_1.yml
+
+--config  configs/tst1/agrivision6_unet_atrous_ub1.yml
+
+
+validate
+C:\alon\seg_test_1\pytorch-semseg-master\validate.py
+--config configs/agrivision6_unet_1.yml
+
+--config runs/zz_cityscapes_1/55852/zz_cityscapes_1.yml --model_path runs/zz_cityscapes_1/55852/frrnB_cityscapes_best_model.pkl --out_path runs/zz_cityscapes_1/55852/out_1
+--config runs/zz_cityscapes_1/21966/zz_cityscapes_1.yml --model_path runs/zz_cityscapes_1/21966/unet_cityscapes_best_model.pkl --out_path runs/zz_cityscapes_1/21966/out_1
+--config runs/zz_cityscapes_1/30956/zz_cityscapes_1.yml --model_path runs/zz_cityscapes_1/30956/unet_cityscapes_best_model.pkl --out_path runs/zz_cityscapes_1/30956/out_1
+--config runs/agrivision6_unet_1/16504/agrivision6_unet_1.yml --model_path runs/agrivision6_unet_1/16504/unet_agrivision6_best_model.pkl --out_path runs/agrivision6_unet_1/16504/out_2
+--config runs/agrivision6_dummy_unet_1/32139/agrivision6_dummy_unet_1.yml --model_path runs/agrivision6_dummy_unet_1/32139/unet_agrivision6_best_model.pkl --out_path runs/agrivision6_dummy_unet_1/32139/out_1
+
+
+python validate_exp1.py
+--config runs\tst3a\2021_06_29_18_44_40_agrivision6_unet_3\agrivision6_unet_3_val.yml --config_exp runs\tst3_ep1\2021_07_06_04_58_07_agrivision6_unet_ep_3\agrivision6_unet_ep_3_val.yml
+--config runs\tst3a\2021_06_29_18_44_40_agrivision6_unet_3\agrivision6_unet_3_val.yml --config_exp runs\tst3_ep1\2021_07_06_09_47_40_agrivision6_unet_ep_4\agrivision6_unet_ep_4_val.yml
+--config runs\tst3c\2021_07_04_15_23_55_agrivision6_unet_2\agrivision6_unet_2_val.yml --config_exp runs\tst3_ep1\2021_07_06_09_47_40_agrivision6_unet_ep_4\agrivision6_unet_ep_4_val.yml
+--config runs\tst3c\2021_07_05_03_18_01_agrivision6_unet_3\agrivision6_unet_3_val.yml --config_exp runs\tst3_ep1\2021_07_06_09_47_40_agrivision6_unet_ep_4\agrivision6_unet_ep_4_val.yml
+--config runs\tst3c\tst3c_val1\agrivision6_val_N.yml --config_exp runs\tst3c\tst3c_val1\agrivision6_unet_ep_4me.yml
+--config configs\tst3d\agrivision6_tst3d_atr_5_val.yml --config_exp configs\tst3d\agrivision6_tst3d_ep23_t2_val.yml
+--config configs/tst_smp1/agrivision6_smp_unet_1.yml --config_exp configs/tst_smp1/agrivision6_smp_unet_ep23_1.yml
+--config configs/tst_ep3/agrivision6_smp_unet_1_val_01.yml --config_exp configs/tst_ep3/agrivision6_t5_ep3_01_val_01.yml
+
+test
+C:\alon\seg_test_1\pytorch-semseg-master\test.py
+--config runs/zz_cityscapes_1/55852/zz_cityscapes_1.yml --model_path runs/zz_cityscapes_1/55852/frrnB_cityscapes_best_model.pkl --img_path C://alon/datasets/cityscapes/leftImg8bit/test/bonn/bonn_000000_000019_leftImg8bit.png --out_path runs/zz_cityscapes_1/55852/out_1
+
+train on 7+1 categories (0 is out-of bounds, 7 is background)
+loader.py:
+self.n_classes = len(self.label_names) + 1
+self.void_classes = []
+self.valid_classes = [0, 1, 2, 3, 4, 5, 6, 7]
+train.py
+loss_weights = [0.23, 0.87, 1.0, 1.0, 0.83, 0.69, 0.75, 0.23]
+loss.py:
+loss = F.cross_entropy(input, target, weight=weight, size_average=size_average, ignore_index=0   #ignore_index=250)
+metrics.py
+mask = (label_true > 0) & (label_true < n_class)
+
+validate (use model trained on 7 categories, no o-o-b, but ignore o-o-b pixels on validation IoU)
+loader.py:
+for _voidc in self.void_classes:
+    mask[mask == _voidc] = 7    # self.ignore_index

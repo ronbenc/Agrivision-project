@@ -1,0 +1,16 @@
+#!/bin/bash 
+#SBATCH -N 1 # number of minimum nodes 
+#SBATCH -c 12 # number of cores 
+#SBATCH --gres=gpu:2080ti:1 # Request 1 gpu 
+#SBATCH --mail-user=salz@cs.technion.ac.il 
+#SBATCH --mail-type=ALL # Valid values are NONE, BEGIN, END, FAIL, REQUEUE, ALL 
+#SBATCH --job-name="agri_sem_seg" 
+#SBATCH -o out_d.txt # stdout goes here 
+#SBATCH -e err_d.txt # stderr goes here 
+
+source /home/alz/miniconda3/etc/profile.d/conda.sh 
+conda activate agri_venv 
+python train.py --config configs/tst1/agrivision6_deeplab1_ub_ab1.yml
+python train.py --config configs/tst1/agrivision6_deeplab1_ub_ab2.yml
+python train.py --config configs/tst1/agrivision6_deeplab1_ub_s1.yml
+python train.py --config configs/tst1/agrivision6_deeplab1_ub_s2.yml

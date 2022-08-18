@@ -1,0 +1,17 @@
+#!/bin/bash 
+#SBATCH -N 1 # number of minimum nodes 
+#SBATCH -c 8 # number of cores 
+#SBATCH --gres=gpu:3090:1 # Request 1 gpu   2080ti:1  TeslaP100:1
+#SBATCH --mail-user=salz@cs.technion.ac.il 
+#SBATCH --mail-type=ALL # Valid values are NONE, BEGIN, END, FAIL, REQUEUE, ALL 
+#SBATCH --job-name="agri_sem_seg" 
+#SBATCH -o zz/out_3090_rdse.txt # stdout goes here 
+#SBATCH -e zz/err_3090_rdse.txt # stderr goes here 
+
+source /home/alz/miniconda3/etc/profile.d/conda.sh 
+conda activate agri_venv_3090 
+python train_agct.py --config configs/rdse_3090/agri6_rdse3090_5a_agct0.yml
+python train_agct.py --config configs/rdse_3090/agri6_rdse3090_5a_agct1.yml
+python train_agct.py --config configs/rdse_3090/agri6_rdse3090_5a_agct2.yml
+python train.py --config configs/rdse_3090/agri6_rdse3090_5a.yml
+

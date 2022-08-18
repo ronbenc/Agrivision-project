@@ -1,0 +1,64 @@
+model:
+    arch: unet_atrous
+    smooth_layers: 0
+    atrous_layers: [2, 2, 2, 2, 2]  # 0 or 1 or 2 for each block,  [0, 0, 0, 0, 0] is regular unet
+    kernel_size: [7,7,7,7,7]
+    #kernel_size: [7,5,5,3,3]
+    #kernel_size: [7,7,7,7,7]
+data:
+    dataset: agrivision6
+    train_split: zz_expert1_small  #zz_expert1_small
+    val_split: zz_expert1_small        #zz_expert1_small
+    test_split: test
+    img_rows: 512
+    img_cols: 512
+    n_channels: 5
+    channel_vector: [1,1,1,1,1]
+    path: C://alon/datasets/Agriculture-Vision/
+training:
+    train_iters: 32
+    val_interval: 8   # 50
+    print_interval: 2  # 10
+    batch_size: 4
+    n_workers: 4
+    optimizer:
+        name: 'adam'
+        lr: 1.0e-4
+        #momentum: 0.99
+        #weight_decay: 0.0005
+    loss:
+        name: 'cross_entropy'
+        reduction: 'mean'
+        ignore_index: 7
+        weight: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]    
+    lr_schedule:
+        #step_size: 100
+        #gamma: 0.1
+    pretrained_model: None    # agrivision6_best_model_pretrained_0.pkl   
+    augmentations:
+        basic:
+            saturation: 0.01    #[saturation varied in 1-x to 1+x]
+            hue: 0.01           #[hue varied in -x to x]
+            brightness: 0.01    #[brightness varied in 1-x to 1+x]
+            gamma: 0.01         #[gamma varied in 1 to 1+x]
+            contrast: 0.01      #[contrast varied in 1-x to 1+x]
+            #ccrop: [h,w]       #[center crop of (h,w)]
+            #rcrop: [10, 10]    #[crop of size (h,w)]
+            rotate: 180           #[rotate -d to d degrees]
+            scale: [0.7, 1.4] #[scale in range (s_min, s_max)]
+            translate: [50, 50]   #[translation by max (du, dv)]
+            hflip: 0.5          #[flip horizontally with chance p]
+            #vflip: 0           #[flip vertically with chance p]
+        collage:
+            n_patches: 7
+validation:
+    image_dir: val_small
+    out_dir: out1_val_small_tst
+debug_info:
+    save_training_images: 0
+    save_training_dir: runs/zz_debug_pics   
+misc:
+    run_dir: runs\tst3d\zz_tst_1
+    saved_model: agrivision6_best_model.pkl
+    random_seed: 1337
+    

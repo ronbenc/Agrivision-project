@@ -1,0 +1,120 @@
+/home/alz/miniconda3/envs/agri_venv_3090/lib/python3.6/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /opt/conda/conda-bld/pytorch_1623448272031/work/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+0it [00:00, ?it/s]1it [00:16, 16.29s/it]2it [00:17, 11.73s/it]3it [00:18,  8.62s/it]4it [00:19,  6.37s/it]5it [00:21,  5.04s/it]6it [00:23,  3.91s/it]7it [00:24,  3.11s/it]7it [00:26,  3.75s/it]
+INFO:ptsemseg:Mean Acc : 	: 0.14284733719605922
+INFO:ptsemseg:FreqW Acc : 	: 0.6884365596319518
+INFO:ptsemseg:Mean IoU : 	: 0.11899775393203164
+INFO:ptsemseg:0: 0.8275227659660312
+INFO:ptsemseg:1: 0.0
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 0.0
+INFO:ptsemseg:5: 0.00026857401334388784
+INFO:ptsemseg:6: 0.005192937544846433
+INFO:ptsemseg:Iter [150/20000]  Loss: 0.8988  Time/Image: 0.0206
+INFO:ptsemseg:Iter [200/20000]  Loss: 0.8653  Time/Image: 0.0209
+0it [00:00, ?it/s]1it [00:15, 15.40s/it]2it [00:16, 11.11s/it]3it [00:17,  8.17s/it]4it [00:18,  6.06s/it]5it [00:20,  4.66s/it]6it [00:21,  3.62s/it]7it [00:22,  2.85s/it]7it [00:24,  3.54s/it]
+INFO:ptsemseg:Iter 200 Loss: 0.7305
+INFO:ptsemseg:Overall Acc: 	: 0.8285324933639371
+INFO:ptsemseg:Mean Acc : 	: 0.20736786336107646
+INFO:ptsemseg:FreqW Acc : 	: 0.7022861774932991
+INFO:ptsemseg:Mean IoU : 	: 0.1714419947955025
+INFO:ptsemseg:0: 0.8321484005062288
+INFO:ptsemseg:1: 0.0973218619605538
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 1.1013236074221868e-05
+INFO:ptsemseg:5: 0.20272356055721627
+INFO:ptsemseg:6: 0.06788912730844433
+INFO:ptsemseg:Iter [250/20000]  Loss: 0.8166  Time/Image: 0.0210
+INFO:ptsemseg:Iter [300/20000]  Loss: 0.6731  Time/Image: 0.0210
+0it [00:00, ?it/s]1it [00:16, 16.04s/it]2it [00:17, 11.55s/it]3it [00:18,  8.48s/it]4it [00:19,  6.27s/it]5it [00:20,  4.82s/it]6it [00:22,  3.72s/it]7it [00:23,  2.90s/it]7it [00:25,  3.63s/it]
+INFO:ptsemseg:Iter 300 Loss: 0.6528
+INFO:ptsemseg:Overall Acc: 	: 0.8243931482379121
+INFO:ptsemseg:Mean Acc : 	: 0.24837139043638742
+INFO:ptsemseg:FreqW Acc : 	: 0.709997643189858
+INFO:ptsemseg:Mean IoU : 	: 0.2025421129782111
+INFO:ptsemseg:0: 0.8294418510911172
+INFO:ptsemseg:1: 0.14224765572231823
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 0.03949697367281009
+INFO:ptsemseg:5: 0.25613163300218034
+INFO:ptsemseg:6: 0.15047667735905176
+INFO:ptsemseg:Iter [350/20000]  Loss: 0.6310  Time/Image: 0.0210
+INFO:ptsemseg:Iter [400/20000]  Loss: 0.6449  Time/Image: 0.0209
+0it [00:00, ?it/s]1it [00:17, 17.56s/it]2it [00:18, 12.61s/it]3it [00:19,  9.22s/it]4it [00:21,  6.78s/it]5it [00:22,  5.14s/it]6it [00:23,  3.93s/it]7it [00:24,  2.99s/it]7it [00:27,  3.86s/it]
+INFO:ptsemseg:Iter 400 Loss: 0.5853
+INFO:ptsemseg:Overall Acc: 	: 0.8415547382345598
+INFO:ptsemseg:Mean Acc : 	: 0.2513044832684462
+INFO:ptsemseg:FreqW Acc : 	: 0.7254058725463824
+INFO:ptsemseg:Mean IoU : 	: 0.2103060955956438
+INFO:ptsemseg:0: 0.8429260527796195
+INFO:ptsemseg:1: 0.07347420293094943
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 0.025802805322920414
+INFO:ptsemseg:5: 0.33340227479238277
+INFO:ptsemseg:6: 0.19653733334363468
+INFO:ptsemseg:Iter [450/20000]  Loss: 0.6550  Time/Image: 0.0207
+INFO:ptsemseg:Iter [500/20000]  Loss: 0.6533  Time/Image: 0.0199
+0it [00:00, ?it/s]1it [00:16, 16.52s/it]2it [00:17, 11.91s/it]3it [00:18,  8.71s/it]4it [00:20,  6.44s/it]5it [00:21,  4.87s/it]6it [00:22,  3.72s/it]7it [00:23,  2.87s/it]7it [00:26,  3.77s/it]
+INFO:ptsemseg:Iter 500 Loss: 0.5593
+INFO:ptsemseg:Overall Acc: 	: 0.8428567515768567
+INFO:ptsemseg:Mean Acc : 	: 0.29537718866510504
+INFO:ptsemseg:FreqW Acc : 	: 0.7312196762114481
+INFO:ptsemseg:Mean IoU : 	: 0.2377815157007064
+INFO:ptsemseg:0: 0.8451520673321891
+INFO:ptsemseg:1: 0.2015611559351517
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 0.07555535848889283
+INFO:ptsemseg:5: 0.3314692848223686
+INFO:ptsemseg:6: 0.21073274332634254
+INFO:ptsemseg:Iter [550/20000]  Loss: 0.6622  Time/Image: 0.0175
+INFO:ptsemseg:Iter [600/20000]  Loss: 0.4888  Time/Image: 0.0185
+0it [00:00, ?it/s]1it [00:16, 16.54s/it]2it [00:17, 11.95s/it]3it [00:19,  8.75s/it]4it [00:20,  6.48s/it]5it [00:21,  4.92s/it]6it [00:22,  3.82s/it]7it [00:23,  3.01s/it]7it [00:26,  3.75s/it]
+INFO:ptsemseg:Iter 600 Loss: 0.5630
+INFO:ptsemseg:Overall Acc: 	: 0.8324443152054304
+INFO:ptsemseg:Mean Acc : 	: 0.38034201690623565
+INFO:ptsemseg:FreqW Acc : 	: 0.7351303133914745
+INFO:ptsemseg:Mean IoU : 	: 0.27269885464115856
+INFO:ptsemseg:0: 0.8285606456465047
+INFO:ptsemseg:1: 0.21819947475007098
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 0.15771725058398406
+INFO:ptsemseg:5: 0.32736476821083005
+INFO:ptsemseg:6: 0.3770498432967202
+INFO:ptsemseg:Iter [650/20000]  Loss: 0.5626  Time/Image: 0.0208
+INFO:ptsemseg:Iter [700/20000]  Loss: 0.4975  Time/Image: 0.0215
+0it [00:00, ?it/s]1it [00:15, 15.12s/it]2it [00:16, 10.94s/it]3it [00:17,  8.02s/it]4it [00:18,  5.97s/it]5it [00:20,  4.63s/it]6it [00:21,  3.61s/it]7it [00:22,  2.82s/it]7it [00:25,  3.68s/it]
+INFO:ptsemseg:Iter 700 Loss: 0.5172
+INFO:ptsemseg:Overall Acc: 	: 0.8449902608983654
+INFO:ptsemseg:Mean Acc : 	: 0.3891819730149459
+INFO:ptsemseg:FreqW Acc : 	: 0.7428122967842725
+INFO:ptsemseg:Mean IoU : 	: 0.276312887512324
+INFO:ptsemseg:0: 0.8433604631936741
+INFO:ptsemseg:1: 0.3071747315822126
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 0.09841184666061102
+INFO:ptsemseg:5: 0.3665327822546912
+INFO:ptsemseg:6: 0.3187103888950793
+INFO:ptsemseg:Iter [750/20000]  Loss: 0.5590  Time/Image: 0.0219
+INFO:ptsemseg:Iter [800/20000]  Loss: 0.4776  Time/Image: 0.0210
+0it [00:00, ?it/s]1it [00:15, 15.08s/it]2it [00:16, 10.92s/it]3it [00:17,  8.10s/it]4it [00:19,  6.03s/it]5it [00:20,  4.63s/it]6it [00:21,  3.59s/it]7it [00:22,  2.80s/it]7it [00:25,  3.67s/it]
+INFO:ptsemseg:Iter 800 Loss: 0.5264
+INFO:ptsemseg:Overall Acc: 	: 0.8435804058604947
+INFO:ptsemseg:Mean Acc : 	: 0.4062825488745999
+INFO:ptsemseg:FreqW Acc : 	: 0.7452368267938888
+INFO:ptsemseg:Mean IoU : 	: 0.2866356577671854
+INFO:ptsemseg:0: 0.842454920423025
+INFO:ptsemseg:1: 0.2846119426526306
+INFO:ptsemseg:2: 0.0
+INFO:ptsemseg:3: 0.0
+INFO:ptsemseg:4: 0.16920338743329558
+INFO:ptsemseg:5: 0.36330230618875836
+INFO:ptsemseg:6: 0.3468770476725881
+INFO:ptsemseg:Iter [850/20000]  Loss: 0.4481  Time/Image: 0.0209
+slurmstepd: error: *** JOB 12432 ON gipdeep7 CANCELLED AT 2021-10-15T17:00:25 ***

@@ -1,0 +1,16 @@
+#!/bin/bash 
+#SBATCH -N 1 # number of minimum nodes 
+#SBATCH -c 24 # number of cores 
+#SBATCH --gres=gpu:2080ti:3 # Request 1 gpu 
+#SBATCH --mail-user=salz@cs.technion.ac.il 
+#SBATCH --mail-type=ALL # Valid values are NONE, BEGIN, END, FAIL, REQUEUE, ALL # jobid 11531
+#SBATCH --job-name="agri_sem_seg" 
+#SBATCH -o zz/out_rdse_4.txt # stdout goes here 
+#SBATCH -e zz/err_rdse_4.txt # stderr goes here 
+
+source /home/alz/miniconda3/etc/profile.d/conda.sh 
+conda activate agri_venv 
+python train_agct_with_pseudo.py --config configs/rdse_par_pseudo/agri6_rdse_4a_agct0_me1p1.yml
+python train_agct_with_pseudo.py --config configs/rdse_par_pseudo/agri6_rdse_4a_agct1_me1p1.yml
+python train_agct_with_pseudo.py --config configs/rdse_par_pseudo/agri6_rdse_4a_agct2_me1p1.yml
+python train_with_pseudo.py --config configs/rdse_par_pseudo/agri6_rdse_4a_me1p1.yml

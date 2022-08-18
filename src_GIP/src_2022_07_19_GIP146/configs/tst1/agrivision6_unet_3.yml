@@ -1,0 +1,56 @@
+model:
+    arch: unet
+data:
+    dataset: agrivision6
+    train_split: train
+    val_split: val_small
+    test_split: test
+    img_rows: 512
+    img_cols: 512
+    n_channels: 5
+    channel_vector: [1,1,1,1,1]
+    path: C://alon/datasets/Agriculture-Vision/
+training:
+    train_iters: 10000
+    val_interval: 50   # 200
+    print_interval: 10  # 50
+    batch_size: 4
+    n_workers: 4
+    optimizer:
+        name: 'adam'
+        lr: 1.0e-4
+    loss:
+        name: 'cross_entropy'
+        reduction: 'mean'
+        ignore_index: 7
+        weight: [0.23, 0.87, 10.0, 10.0, 0.83, 0.69, 0.75]
+    #l_rate: 1.0e-4
+    lr_schedule:
+    #momentum: 0.99
+    #weight_decay: 0.0005
+    resume: None    # runs/agrivision6_unet_1/NONE/unet_agrivision6_best_model.pkl
+    #visdom: False
+    augmentations:
+        basic:
+            saturation: 0.01                                #[saturation varied in 1-x to 1+x]
+            hue: 0.01                                       #[hue varied in -x to x]
+            brightness: 0.01                                #[brightness varied in 1-x to 1+x]
+            gamma: 0.01                                     #[gamma varied in 1 to 1+x]
+            contrast: 0.01                                  #[contrast varied in 1-x to 1+x]
+            #ccrop: [h,w]                                 #[center crop of (h,w)]
+            #rcrop: [10, 10]                                #[crop of size (h,w)]
+            rotate: 180                                    #[rotate -d to d degrees]
+            scale: [0.7, 1.4]                                 #[scale in range (s_min, s_max)]
+            translate: [50, 50]                          #[translation by max (du, dv)]
+            hflip: 0.5                                    #[flip horizontally with chance p]
+            #vflip: 0                                     #[flip vertically with chance p]
+        collage:
+            n_patches: 7
+validation:
+    model_path: runs/agrivision6_unet_1/2021_06_18_12_40_27/unet2_agrivision6_best_model.pkl
+    out_folder: runs/agrivision6_unet_1/2021_06_18_12_40_27/out_1
+debug_info:
+    save_training_images: 0
+    save_training_folder: runs/zz_debug_pics   # C://alon/seg_test_1/pytorch-semseg-master/runs/zz_debug_pics/
+misc:
+    random_seed: 1337

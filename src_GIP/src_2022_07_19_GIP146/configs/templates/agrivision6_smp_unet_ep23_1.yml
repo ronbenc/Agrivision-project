@@ -1,0 +1,68 @@
+model:
+    arch: smp_unet
+    smooth_layers: 0
+    atrous_dilations: [2,4,8,16]
+    atrous_layers: [2, 2, 2, 2, 2]  # 0 or 1 or 2 for each block,  [0, 0, 0, 0, 0] is regular unet
+    kernel_size: [7,5,3,3,3]
+data:
+    dataset: agrivision6_expert_cat_23
+    path: C://alon/datasets/Agriculture-Vision/
+    train_split: train
+    val_split: val
+    test_split: test
+    train_img_list: configs/agri2020_train_ep_3888.txt
+    val_img_list: configs/agri2020_val_ep23_465.txt      # configs/agri2020_val_small.txt
+    test_img_list: configs/agri2020_test_all.txt  # configs/agri2020_test_all.txt
+    img_rows: 512
+    img_cols: 512
+    n_channels: 5
+    channel_vector: [1,1,1,1,1]    
+training:
+    run_dir: runs/tst_smp_1/t1
+    pretrained_model: runs/tst4/t1/2021_08_04_13_43_20_agrivision6_t4_b_me1/agrivision6_best_model.pkl   # 
+    saved_model: agrivision6_exp23_best_model.pkl
+    train_iters: 50000  # 20000
+    val_interval: 50    # 50
+    print_interval: 10  # 10
+    batch_size: 16      # 4
+    n_workers: 4
+    optimizer:
+        name: 'adam'
+        lr: 1.0e-4
+        #momentum: 0.99
+        #weight_decay: 0.0005
+    loss:
+        name: 'cross_entropy'
+        reduction: 'mean'
+        ignore_index: 3
+        weight: [1.0, 1.0, 1.0]    
+    lr_schedule:
+        #step_size: 100
+        #gamma: 0.1
+    augmentations:
+        basic:
+            saturation: 0.01    #[saturation varied in 1-x to 1+x]
+            hue: 0.01           #[hue varied in -x to x]
+            brightness: 0.01    #[brightness varied in 1-x to 1+x]
+            gamma: 0.01         #[gamma varied in 1 to 1+x]
+            contrast: 0.01      #[contrast varied in 1-x to 1+x]
+            rotate: 180           #[rotate -d to d degrees]
+            shear: 0           # [shear value -s to s]
+            scale: [0.7, 1.4] #[scale in range (s_min, s_max)]
+            translate: [50, 50]   #[translation by max (du, dv)]
+            hflip: 0.5          #[flip horizontally with chance p]            
+        collage:
+            n_patches: 7
+validation:
+    is_test: 1   # 0 1
+    img_list: configs/agri2020_val_small.txt
+    model: runs/tst_smp_1/agrivision6_exp23_best_model.pkl
+    out_dir: runs/tst_smp_1/zz_2n  # out1_val_all_exp23_t2 # out1_val_small_1
+    out_pics: 0     # 0 - none; 1 - rgb,nir,ndvi,pred,gt; 2 - pred_raw,pred_smooth,gt
+    num_rotations: 0
+misc:        
+    random_seed: 1337
+debug_info:
+    save_training_images: 0
+    save_training_dir: runs/zz_debug_pics1 
+    

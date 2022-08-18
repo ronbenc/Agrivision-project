@@ -1,0 +1,30 @@
+/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/cuda/__init__.py:104: UserWarning: 
+GeForce RTX 3090 with CUDA capability sm_86 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_37 sm_50 sm_60 sm_61 sm_70 sm_75 compute_37.
+If you want to use the GeForce RTX 3090 GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+
+  warnings.warn(incompatible_device_warn.format(device_name, capability, " ".join(arch_list), device_name))
+Traceback (most recent call last):
+  File "train_agct.py", line 304, in <module>
+    train(cfg)
+  File "train_agct.py", line 180, in train
+    outputs = model(images)
+  File "/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/nn/modules/module.py", line 889, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/nn/parallel/data_parallel.py", line 165, in forward
+    return self.module(*inputs[0], **kwargs[0])
+  File "/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/nn/modules/module.py", line 889, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/alz/agri_semseg/ptsemseg/models_deeplab/deeplab.py", line 53, in forward
+    x, low_level_feats = self.backbone(input)
+  File "/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/nn/modules/module.py", line 889, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/alz/agri_semseg/ptsemseg/models_deeplab/backbone/resnet.py", line 189, in forward
+    x = self.bn1(x)
+  File "/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/nn/modules/module.py", line 889, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/nn/modules/batchnorm.py", line 140, in forward
+    self.weight, self.bias, bn_training, exponential_average_factor, self.eps)
+  File "/home/alz/miniconda3/envs/agri_venv/lib/python3.6/site-packages/torch/nn/functional.py", line 2147, in batch_norm
+    input, weight, bias, running_mean, running_var, training, momentum, eps, torch.backends.cudnn.enabled
+RuntimeError: cuDNN error: CUDNN_STATUS_EXECUTION_FAILED
