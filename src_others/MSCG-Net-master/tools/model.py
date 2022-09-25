@@ -4,6 +4,9 @@ from collections import OrderedDict
 from pretrainedmodels import se_resnext50_32x4d, se_resnext101_32x4d
 from lib.net.scg_gcn import *
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 
 def load_model(name='MSCG-Rx50', classes=7, node_size=(32,32)):
     if name == 'MSCG-Rx50':
