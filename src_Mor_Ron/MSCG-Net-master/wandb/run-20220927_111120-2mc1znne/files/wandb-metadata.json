@@ -1,0 +1,24 @@
+{
+    "os": "Linux-4.15.0-191-generic-x86_64-with-glibc2.27",
+    "python": "3.10.4",
+    "heartbeatAt": "2022-09-27T08:11:21.397273",
+    "startedAt": "2022-09-27T08:11:20.141033",
+    "docker": null,
+    "gpu": "NVIDIA GeForce GTX TITAN X",
+    "gpu_count": 1,
+    "cpu_count": 12,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/ronbenc/Agrivision-project/src_Mor_Ron/MSCG-Net-master/tools/train_R50.py",
+    "codePath": "src_Mor_Ron/MSCG-Net-master/tools/train_R50.py",
+    "git": {
+        "remote": "https://github.com/ronbenc/Agrivision-project.git",
+        "commit": "c22339cdb28bed41bbc8b350f89509d24957003c"
+    },
+    "email": "ronbenc@campus.technion.ac.il",
+    "root": "/home/ronbenc/Agrivision-project",
+    "host": "isl-titan",
+    "username": "ronbenc",
+    "executable": "/home/ronbenc/miniconda3/envs/MSCG_env/bin/python"
+}

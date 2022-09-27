@@ -9,6 +9,7 @@ import time
 import torchvision.utils as vutils
 from lib.loss.acw_loss import *
 from tensorboardX import SummaryWriter
+import wandb
 from torch import optim
 from torch.backends import cudnn
 from torch.utils.data import DataLoader
@@ -19,6 +20,7 @@ from lib.utils.lr import init_params_lr
 from lib.utils.measure import *
 from lib.utils.visual import *
 from tools.model import load_model
+from tools.utils import parse_args
 
 cudnn.benchmark = True
 
@@ -68,7 +70,20 @@ def random_seed(seed_value, use_cuda=True):
         torch.backends.cudnn.benchmark = False
 
 
+def generate_wandb_name():
+    return "test_run"
+
+def init_wandb():
+    wandb.init(project = "agrivision", entity = "mor_ron")
+    wandb.run.name = generate_wandb_name()
+    wandb.run.save()
+
+
+
 def main():
+    # parse channel args
+    channel_args = parse_args()
+
     random_seed(train_args.seeds)
     train_args.write2txt()
     net = load_model(name=train_args.model, classes=train_args.nb_classes,
@@ -82,7 +97,8 @@ def main():
     train_set, val_set = train_args.get_dataset()
     train_loader = DataLoader(dataset=train_set, batch_size=train_args.train_batch, num_workers=0, shuffle=True)
     val_loader = DataLoader(dataset=val_set, batch_size=train_args.val_batch, num_workers=0)
-
+    # initiate weights and biases log:
+    init_wandb()
 
     criterion = ACW_loss().cuda()
 
@@ -133,6 +149,11 @@ def main():
             writer.add_scalar('aux_loss', aux_train_loss.avg, curr_iter)
             # writer.add_scalar('cls_loss', cls_trian_loss.avg, curr_iter)
             writer.add_scalar('lr', optimizer.param_groups[0]['lr'], curr_iter)
+
+            wandb.log({'main_loss': train_main_loss.avg})
+            wandb.log({'aux_loss': aux_train_loss.avg})
+            # wandb.log({'cls_loss': cls_trian_loss.avg})
+            wandb.log({'lr': optimizer.param_groups[0]['lr']})
 
             if (i + 1) % train_args.print_freq == 0:
                 newtime = time.time()
@@ -199,6 +220,13 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
     writer.add_scalar('mean_iu', mean_iu, epoch)
     writer.add_scalar('fwavacc', fwavacc, epoch)
     writer.add_scalar('f1_score', f1, epoch)
+
+    wandb.log({'val_loss': avg_loss})
+    wandb.log({'acc': acc})
+    wandb.log({'acc_cls': acc_cls})
+    wandb.log({'mean_iu': mean_iu})
+    wandb.log({'fwavacc': fwavacc})
+    wandb.log({'f1_score': f1})
 
     updated = train_args.update_best_record(epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1)
 
