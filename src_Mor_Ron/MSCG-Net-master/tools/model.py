@@ -4,13 +4,60 @@ from collections import OrderedDict
 from pretrainedmodels import se_resnext50_32x4d, se_resnext101_32x4d
 from lib.net.scg_gcn import *
 
+from enum import Enum
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
+from torchvision.utils import save_image
 
-def load_model(name='MSCG-Rx50', classes=7, node_size=(32,32), channel_args=None):
+# assuming (N, R, G, B) order #TODO make sure RGB/BGR?
+NIR = 0
+RED = 1
+GREEN = 2
+BLUE = 3
+
+
+class AppendGenericAgriculturalIndices(nn.Module):
+    """GAI = (a0N + a1R + a2G + a3B + a4)/(a5N + a6R + a7G + a8B + a9)"""
+    def __init__(self, alphas = None, epsilon = 1e-10)->None:
+        super().__init__()
+        self.alphas = alphas
+        self.epsilon = epsilon
+        self.dim = -3
+         # add an option for trainable alphas. Initialize for learning by some parametric distibution in [-1, 1] and set as learnable parameters
+    
+    def forward(self, x):
+        red_band, green_band, blue_band, nir_band = x[:, RED, :, :], x[:, GREEN, :, :], x[:, BLUE, :, :], x[:, NIR, :, :]
+        nomin = self.alphas[0]*nir_band + self.alphas[1]*red_band + self.alphas[2]*green_band + self.alphas[3]*blue_band + self.alphas[4]
+        denom = self.alphas[5]*nir_band + self.alphas[6]*red_band + self.alphas[7]*green_band + self.alphas[8]*blue_band + self.alphas[9]
+        index = nomin/(denom + self.epsilon)
+        index = index.unsqueeze(self.dim)
+        y = torch.cat((x, index), dim=self.dim)
+        return y
+
+class IndexTransforms(nn.Module):
+    def __init__(self, args) -> None:
+        super().__init__()
+        self.transforms = []
+
+        if args.NDVI:
+            self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([1, -1, 0, 0, 0, 1, 1, 0, 0, 0])))
+        if args.GAI:
+            self.transforms.append(AppendGenericAgriculturalIndices(alphas = args.GAI))
+        
+        self.number_of_transforms = len(self.transforms)
+        self.index_transform = nn.Sequential(*self.transforms)
+
+    def forward(self, x):
+        return self.index_transform(x)
+
+
+
+        
+
+def load_model(args, name='MSCG-Rx50', classes=7, node_size=(32,32)):
     if name == 'MSCG-Rx50':
-        net = rx50_gcn_3head_nchannel(out_channels=classes, channel_args...)
+        net = rx50_gcn_3head_4channel(args=args, out_channels=classes)
     elif name == 'MSCG-Rx101':
         net = rx101_gcn_3head_4channel(out_channels=classes)
     else:
@@ -21,7 +68,7 @@ def load_model(name='MSCG-Rx50', classes=7, node_size=(32,32), channel_args=None
 
 
 class rx50_gcn_3head_4channel(nn.Module):
-    def __init__(self, out_channels=7, pretrained=True,
+    def __init__(self, args, out_channels=7, pretrained=True,
                  nodes=(32, 32), dropout=0,
                  enhance_diag=True, aux_pred=True):
         super(rx50_gcn_3head_4channel, self).__init__()  # same with  res_fdcs_v5
@@ -31,10 +78,14 @@ class rx50_gcn_3head_4channel(nn.Module):
         self.num_cluster = out_channels
 
         resnet = se_resnext50_32x4d()
+
+        self.index_transforms_layer = IndexTransforms(args)
         self.layer0, self.layer1, self.layer2, self.layer3, = \
             resnet.layer0, resnet.layer1, resnet.layer2, resnet.layer3
 
-        self.conv0 = torch.nn.Conv2d(4, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+        conv_in_channels = 4 + self.index_transforms_layer.number_of_transforms
+
+        self.conv0 = torch.nn.Conv2d(conv_in_channels, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 
         for child in self.layer0.children():
             for param in child.parameters():
@@ -58,6 +109,9 @@ class rx50_gcn_3head_4channel(nn.Module):
         weight_xavier_init(self.graph_layers1, self.graph_layers2, self.scg)
 
     def forward(self, x):
+        # add prepocess channels
+        x = self.index_transforms_layer(x)
+
         x_size = x.size()
 
         gx = self.layer3(self.layer2(self.layer1(self.layer0(x))))
