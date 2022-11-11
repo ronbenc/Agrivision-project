@@ -78,9 +78,9 @@ def random_seed(seed_value, use_cuda=True):
 def generate_wandb_name():
     return "test_run"
 
-def init_wandb():
+def init_wandb(run_name):
     wandb.init(project = "agrivision", entity = "mor_ron")
-    wandb.run.name = generate_wandb_name()
+    wandb.run.name = run_name
     wandb.run.save()
 
 
@@ -103,7 +103,7 @@ def main():
     val_loader = DataLoader(dataset=val_set, batch_size=train_args.val_batch, num_workers=0)
     # initiate weights and biases log:
     if channel_args.wandb:
-        init_wandb()
+        init_wandb(channel_args.run_name)
 
     criterion = ACW_loss().cuda()
 

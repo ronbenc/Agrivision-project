@@ -10,6 +10,7 @@ def parse_args():
     parser.add_argument('--SAVI', action='store_true', default=False, help='add SAVI channel (default: False)')
     parser.add_argument('--GAI', nargs=10, help='add GAI channel',  type=float)
     parser.add_argument('--learn', action='store_true', default=False, help='add  learnable channel (default: False)')
+    parser.add_argument('--run_name', default='test-run', help='name of the run in wandb , default: "test-run"')
 
     args = parser.parse_args()
     return args

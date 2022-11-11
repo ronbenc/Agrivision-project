@@ -3,3 +3,5 @@ dataset/
 runs/
 src
 ckpt
+wandb/
+/pre_process.py

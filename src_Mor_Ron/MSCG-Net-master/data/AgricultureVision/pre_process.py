@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split, KFold
 import cv2
 
 # change DATASET ROOT to your dataset path
-DATASET_ROOT = '/home/ronbenc/Agrivision-project/dataset'
+DATASET_ROOT = '/home/mor.lavon/agrivision/norwegian/2020_data'
 
 TRAIN_ROOT = os.path.join(DATASET_ROOT, 'train')
 VAL_ROOT = os.path.join(DATASET_ROOT, 'val')
