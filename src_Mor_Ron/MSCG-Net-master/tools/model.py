@@ -42,6 +42,10 @@ class IndexTransforms(nn.Module):
 
         if args.NDVI:
             self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([1, -1, 0, 0, 0, 1, 1, 0, 0, 0])))
+        if args.gNDVI:
+            self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([1, 0, -1, 0, 0, 1, 0, 1, 0, 0])))
+        if args.SAVI:
+            self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([2, -2, 0, 0, 0, 1, 1, 0, 0, 1])))
         if args.GAI:
             self.transforms.append(AppendGenericAgriculturalIndices(alphas = args.GAI))
         
