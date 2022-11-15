@@ -19,18 +19,32 @@ BLUE = 3
 
 class AppendGenericAgriculturalIndices(nn.Module):
     """GAI = (a0N + a1R + a2G + a3B + a4)/(a5N + a6R + a7G + a8B + a9)"""
-    def __init__(self, alphas = None, epsilon = 1e-10)->None:
+    def __init__(self, alphas = None, epsilon=1e-10, learn=False, std=1.0, min=0, max=1)->None:
         super().__init__()
-        self.alphas = alphas
+        if learn:
+            # add an option for trainable alphas. Initialize for learning by some parametric distibution in [-1, 1] and set as learnable parameters
+            # init alphas by some logic
+            self.alphas = nn.Parameter(torch.normal(mean=0.0, std=std, size=(10,)))
+            print("initialized alphas: {}".format(self.alphas))
+
+        else:
+            self.alphas = alphas
+            
+
         self.epsilon = epsilon
         self.dim = -3
-         # add an option for trainable alphas. Initialize for learning by some parametric distibution in [-1, 1] and set as learnable parameters
+        self.min = min
+        self.max = max
+    
+    def _min_max_normalize(self, x):
+        return (x - self.min)/(self.max - self.min)
     
     def forward(self, x):
         red_band, green_band, blue_band, nir_band = x[:, RED, :, :], x[:, GREEN, :, :], x[:, BLUE, :, :], x[:, NIR, :, :]
         nomin = self.alphas[0]*nir_band + self.alphas[1]*red_band + self.alphas[2]*green_band + self.alphas[3]*blue_band + self.alphas[4]
         denom = self.alphas[5]*nir_band + self.alphas[6]*red_band + self.alphas[7]*green_band + self.alphas[8]*blue_band + self.alphas[9]
         index = nomin/(denom + self.epsilon)
+        index = self._min_max_normalize(index)
         index = index.unsqueeze(self.dim)
         y = torch.cat((x, index), dim=self.dim)
         return y
@@ -41,13 +55,16 @@ class IndexTransforms(nn.Module):
         self.transforms = []
 
         if args.NDVI:
-            self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([1, -1, 0, 0, 0, 1, 1, 0, 0, 0])))
+            self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([1, -1, 0, 0, 0, 1, 1, 0, 0, 0]), min=-1, max=1))
         if args.gNDVI:
-            self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([1, 0, -1, 0, 0, 1, 0, 1, 0, 0])))
+            self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([1, 0, -1, 0, 0, 1, 0, 1, 0, 0]), min=-1, max=1))
         if args.SAVI:
             self.transforms.append(AppendGenericAgriculturalIndices(alphas = torch.tensor([2, -2, 0, 0, 0, 1, 1, 0, 0, 1])))
         if args.GAI:
             self.transforms.append(AppendGenericAgriculturalIndices(alphas = args.GAI))
+        if args.learn:
+            self.transforms.append(AppendGenericAgriculturalIndices(learn=True, std=args.std))
+
         
         self.number_of_transforms = len(self.transforms)
         self.index_transform = nn.Sequential(*self.transforms)
@@ -114,9 +131,19 @@ class rx50_gcn_3head_4channel(nn.Module):
 
     def forward(self, x):
         # add prepocess channels
+
         x = self.index_transforms_layer(x)
+        print("indices max and min pixel value: max {}, min {}".format(torch.max(x[:, 4:, :, :]), torch.min(x[:, 4:, :, :])))
+        for i, param in enumerate(self.index_transforms_layer.parameters()):
+            print(f"Parameter #{i} of shape {param.shape}:\n{param.data}\n")
+        # x = x[:, -1, :, :].unsqueeze(1) # intrestin experience to bottleneck the learnable channel
+        
 
         x_size = x.size()
+        print(x_size)
+
+        # for i, param in enumerate(self.layer0.parameters()):
+        #     print(f"conv Parameter #{i} of shape {param.shape}:\n{param.data}\n")
 
         gx = self.layer3(self.layer2(self.layer1(self.layer0(x))))
         gx90 = gx.permute(0, 1, 3, 2)
