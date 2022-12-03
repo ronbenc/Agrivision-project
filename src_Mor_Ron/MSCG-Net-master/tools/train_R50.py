@@ -155,11 +155,6 @@ def main():
             # writer.add_scalar('cls_loss', cls_trian_loss.avg, curr_iter)
             writer.add_scalar('lr', optimizer.param_groups[0]['lr'], curr_iter)
 
-            if channel_args.wandb:
-                wandb.log({'main_loss': train_main_loss.avg})
-                wandb.log({'aux_loss': aux_train_loss.avg})
-                # wandb.log({'cls_loss': cls_trian_loss.avg})
-                wandb.log({'lr': optimizer.param_groups[0]['lr']})
 
             if (i + 1) % train_args.print_freq == 0:
                 newtime = time.time()
@@ -171,6 +166,12 @@ def main():
 
                 starttime = newtime
 
+        # log here
+        if channel_args.wandb:
+            wandb.log({'main_loss': train_main_loss.avg})
+            wandb.log({'aux_loss': aux_train_loss.avg})
+            # wandb.log({'cls_loss': cls_trian_loss.avg})
+            wandb.log({'lr': optimizer.param_groups[0]['lr']})
         validate(net, val_set, val_loader, criterion, optimizer, start_epoch + new_ep, new_ep)
 
         new_ep += 1
