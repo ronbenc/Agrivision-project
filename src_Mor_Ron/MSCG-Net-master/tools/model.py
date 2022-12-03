@@ -157,8 +157,6 @@ class rx50_gcn_3head_4channel(nn.Module):
         
 
         x_size = x.size()
-        print(x_size)
-
         # for i, param in enumerate(self.layer0.parameters()):
         #     print(f"conv Parameter #{i} of shape {param.shape}:\n{param.data}\n")
 

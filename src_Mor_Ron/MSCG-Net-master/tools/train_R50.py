@@ -168,15 +168,16 @@ def main():
 
         # log here
         if channel_args.wandb:
-            wandb.log({'main_loss': train_main_loss.avg})
-            wandb.log({'aux_loss': aux_train_loss.avg})
-            # wandb.log({'cls_loss': cls_trian_loss.avg})
-            wandb.log({'lr': optimizer.param_groups[0]['lr']})
+            wandb.log({'main_loss': train_main_loss.avg,
+                        'aux_loss': aux_train_loss.avg,
+                        'lr': optimizer.param_groups[0]['lr']},
+                         step=start_epoch + new_ep)
+
         validate(net, val_set, val_loader, criterion, optimizer, start_epoch + new_ep, new_ep)
 
         new_ep += 1
 
-        if new_ep == 50:
+        if new_ep == 30:
             break
 
 
@@ -229,12 +230,13 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
     writer.add_scalar('f1_score', f1, epoch)
 
     if channel_args.wandb:
-        wandb.log({'val_loss': avg_loss})
-        wandb.log({'acc': acc})
-        wandb.log({'acc_cls': acc_cls})
-        wandb.log({'mean_iu': mean_iu})
-        wandb.log({'fwavacc': fwavacc})
-        wandb.log({'f1_score': f1})
+        wandb.log({'val_loss': avg_loss,
+                    'acc': acc,
+                    'acc_cls': acc_cls,
+                    'mean_iu': mean_iu,
+                    'fwavacc': fwavacc,
+                    'f1_score': f1}, step=epoch)
+
 
     updated = train_args.update_best_record(epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1)
 
