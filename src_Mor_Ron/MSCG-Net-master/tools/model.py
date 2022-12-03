@@ -17,8 +17,8 @@ GREEN = 2
 BLUE = 3
 
 channel_params= dict(
-    NDVI = dict(alphas = torch.tensor([1, -1, 0, 0, 0, 1, 1, 0, 0, 0], dtype=torch.double), min=-1, max=1),
-    gNDVI = dict(alphas = torch.tensor([1, 0, -1, 0, 0, 1, 0, 1, 0, 0], dtype=torch.double), min=-1, max=1),
+    NDVI = dict(alphas = torch.tensor([1, -1, 0, 0, 0, 1, 1, 0, 0, 0], dtype=torch.double), min=-1, max=1, min_clip=-1, max_clip=1),
+    gNDVI = dict(alphas = torch.tensor([1, 0, -1, 0, 0, 1, 0, 1, 0, 0], dtype=torch.double), min=-1, max=1, min_clip=-1, max_clip=1),
     SAVI = dict(alphas = torch.tensor([1, -1, 0, 0, 0, 1.5, 1.5, 0, 0, 0.75], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000) # L = 0.5
 )
 
@@ -76,7 +76,7 @@ class IndexTransforms(nn.Module):
             self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["SAVI"]))
         if args.GAI: #pass min, max, clip...
             self.transforms.append(AppendGenericAgriculturalIndices(alphas = args.GAI))
-        if init_channel:
+        if args.learn:
             for init_channel in args.learn:
                 if init_channel == "gaussian":
                     self.transforms.append(AppendGenericAgriculturalIndices(learn=True))
