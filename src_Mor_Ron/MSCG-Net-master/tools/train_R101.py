@@ -6,9 +6,14 @@ from __future__ import unicode_literals
 import sys
 import time
 
+from pathlib import Path
+path_root = Path(__file__).parents[1]
+sys.path.append(str(path_root))
+
 import torchvision.utils as vutils
 from lib.loss.acw_loss import *
 from tensorboardX import SummaryWriter
+import wandb
 from torch import optim
 from torch.backends import cudnn
 from torch.utils.data import DataLoader
@@ -20,8 +25,12 @@ from lib.utils.measure import *
 from lib.utils.visual import *
 
 from tools.model import load_model
+from tools.utils import parse_args
+
 
 cudnn.benchmark = True
+channel_args = parse_args()
+
 
 prepare_gt(VAL_ROOT)
 prepare_gt(TRAIN_ROOT)
@@ -67,12 +76,19 @@ def random_seed(seed_value, use_cuda=True):
         torch.backends.cudnn.deterministic = True  # needed
         torch.backends.cudnn.benchmark = False
 
+def generate_wandb_name():
+    return "test_run"
+
+def init_wandb(run_name):
+    wandb.init(project = "agrivision", entity = "mor_ron")
+    wandb.run.name = run_name
+    wandb.run.save()
 
 def main():
     random_seed(train_args.seeds)
 
     train_args.write2txt()
-    net = load_model(name=train_args.model, classes=train_args.nb_classes,
+    net = load_model(channel_args, name=train_args.model, classes=train_args.nb_classes,
                      node_size=train_args.node_size)
 
     net, start_epoch = train_args.resume_train(net)
@@ -82,6 +98,9 @@ def main():
     train_set, val_set = train_args.get_dataset()
     train_loader = DataLoader(dataset=train_set, batch_size=train_args.train_batch, num_workers=0, shuffle=True)
     val_loader = DataLoader(dataset=val_set, batch_size=train_args.val_batch, num_workers=0)
+    # initiate weights and biases log:
+    if channel_args.wandb:
+        init_wandb(channel_args.run_name)
 
     criterion = ACW_loss().cuda()
 
@@ -133,6 +152,13 @@ def main():
             # writer.add_scalar('cls_loss', cls_trian_loss.avg, curr_iter)
             writer.add_scalar('lr', optimizer.param_groups[0]['lr'], curr_iter)
 
+            if channel_args.wandb:
+               wandb.log({'main_loss': train_main_loss.avg})
+               wandb.log({'aux_loss': aux_train_loss.avg})
+               # wandb.log({'cls_loss': cls_trian_loss.avg})
+               wandb.log({'lr': optimizer.param_groups[0]['lr']})
+
+
             if (i + 1) % train_args.print_freq == 0:
                 newtime = time.time()
 
@@ -145,7 +171,7 @@ def main():
 
         validate(net, val_set, val_loader, criterion, optimizer, start_epoch + new_ep, new_ep)
 
-        new_ep += 1
+        new_ep += 50
 
 
 def validate(net, val_set, val_loader, criterion, optimizer, epoch, new_ep):
@@ -189,6 +215,14 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
     writer.add_scalar('mean_iu', mean_iu, epoch)
     writer.add_scalar('fwavacc', fwavacc, epoch)
     writer.add_scalar('f1_score', f1, epoch)
+
+    if channel_args.wandb:
+        wandb.log({'val_loss': avg_loss})
+        wandb.log({'acc': acc})
+        wandb.log({'acc_cls': acc_cls})
+        wandb.log({'mean_iu': mean_iu})
+        wandb.log({'fwavacc': fwavacc})
+        wandb.log({'f1_score': f1})
 
     updated = train_args.update_best_record(epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1)
 
