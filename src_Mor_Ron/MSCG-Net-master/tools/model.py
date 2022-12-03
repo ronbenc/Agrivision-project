@@ -76,11 +76,12 @@ class IndexTransforms(nn.Module):
             self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["SAVI"]))
         if args.GAI: #pass min, max, clip...
             self.transforms.append(AppendGenericAgriculturalIndices(alphas = args.GAI))
-        for init_channel in args.learn:
-            if init_channel == "gaussian":
-                self.transforms.append(AppendGenericAgriculturalIndices(learn=True))
-            else:
-                self.transforms.append(AppendGenericAgriculturalIndices(**channel_params[init_channel], learn=True))
+        if init_channel:
+            for init_channel in args.learn:
+                if init_channel == "gaussian":
+                    self.transforms.append(AppendGenericAgriculturalIndices(learn=True))
+                else:
+                    self.transforms.append(AppendGenericAgriculturalIndices(**channel_params[init_channel], learn=True))
 
         
         self.number_of_transforms = len(self.transforms)
