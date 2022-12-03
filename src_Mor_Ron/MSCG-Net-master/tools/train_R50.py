@@ -155,6 +155,13 @@ def main():
             # writer.add_scalar('cls_loss', cls_trian_loss.avg, curr_iter)
             writer.add_scalar('lr', optimizer.param_groups[0]['lr'], curr_iter)
 
+                    # log here
+            if channel_args.wandb:
+                wandb.log({'main_loss': train_main_loss.avg,
+                        'aux_loss': aux_train_loss.avg,
+                        'lr': optimizer.param_groups[0]['lr'],
+                        'iteration': curr_iter}
+                        )
 
             if (i + 1) % train_args.print_freq == 0:
                 newtime = time.time()
@@ -166,12 +173,7 @@ def main():
 
                 starttime = newtime
 
-        # log here
-        if channel_args.wandb:
-            wandb.log({'main_loss': train_main_loss.avg,
-                        'aux_loss': aux_train_loss.avg,
-                        'lr': optimizer.param_groups[0]['lr']},
-                         step=start_epoch + new_ep)
+
 
         validate(net, val_set, val_loader, criterion, optimizer, start_epoch + new_ep, new_ep)
 
@@ -235,7 +237,8 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
                     'acc_cls': acc_cls,
                     'mean_iu': mean_iu,
                     'fwavacc': fwavacc,
-                    'f1_score': f1}, step=epoch)
+                    'f1_score': f1,
+                    'epoch': epoch})
 
 
     updated = train_args.update_best_record(epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1)
@@ -243,12 +246,12 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
     # save best record and snapshot prameters
     val_visual = []
 
-    snapshot_name = 'epoch_%d_loss_%.5f_acc_%.5f_acc-cls_%.5f_mean-iu_%.5f_fwavacc_%.5f_f1_%.5f_lr_%.10f' % (
-        epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1, optimizer.param_groups[0]['lr']
+    snapshot_name = 'run_name_%s_epoch_%d_loss_%.5f_acc_%.5f_acc-cls_%.5f_mean-iu_%.5f_fwavacc_%.5f_f1_%.5f_lr_%.10f' % (
+        channel_args.run_name, epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1, optimizer.param_groups[0]['lr']
     )
 
     if updated or (train_args.best_record['val_loss'] > avg_loss):
-        torch.save(net.state_dict(), os.path.join(train_args.save_path, channel_args.run_name, snapshot_name + '.pth'))
+        torch.save(net.state_dict(), os.path.join(train_args.save_path, snapshot_name + '.pth'))
         # train_args.update_best_record(epoch, val_loss.avg, acc, acc_cls, mean_iu, fwavacc, f1)
     if train_args.save_pred:
         if updated or (new_ep % 5 == 0):
