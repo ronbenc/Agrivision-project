@@ -245,7 +245,7 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
     )
 
     if updated or (train_args.best_record['val_loss'] > avg_loss):
-        torch.save(net.state_dict(), os.path.join(train_args.save_path, snapshot_name + '.pth'))
+        torch.save(net.state_dict(), os.path.join(train_args.save_path, channel_args.run_name, snapshot_name + '.pth'))
         # train_args.update_best_record(epoch, val_loss.avg, acc, acc_cls, mean_iu, fwavacc, f1)
     if train_args.save_pred:
         if updated or (new_ep % 5 == 0):
