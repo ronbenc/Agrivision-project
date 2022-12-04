@@ -153,10 +153,11 @@ def main():
             writer.add_scalar('lr', optimizer.param_groups[0]['lr'], curr_iter)
 
             if channel_args.wandb:
-               wandb.log({'main_loss': train_main_loss.avg})
-               wandb.log({'aux_loss': aux_train_loss.avg})
-               # wandb.log({'cls_loss': cls_trian_loss.avg})
-               wandb.log({'lr': optimizer.param_groups[0]['lr']})
+              wandb.log({'main_loss': train_main_loss.avg,
+                        'aux_loss': aux_train_loss.avg,
+                        'lr': optimizer.param_groups[0]['lr'],
+                        'iteration': curr_iter}
+                        )
 
 
             if (i + 1) % train_args.print_freq == 0:
@@ -220,20 +221,21 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
     writer.add_scalar('f1_score', f1, epoch)
 
     if channel_args.wandb:
-        wandb.log({'val_loss': avg_loss})
-        wandb.log({'acc': acc})
-        wandb.log({'acc_cls': acc_cls})
-        wandb.log({'mean_iu': mean_iu})
-        wandb.log({'fwavacc': fwavacc})
-        wandb.log({'f1_score': f1})
+        wandb.log({'val_loss': avg_loss,
+                    'acc': acc,
+                    'acc_cls': acc_cls,
+                    'mean_iu': mean_iu,
+                    'fwavacc': fwavacc,
+                    'f1_score': f1,
+                    'epoch': epoch})
 
     updated = train_args.update_best_record(epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1)
 
     # save best record and snapshot prameters
     val_visual = []
 
-    snapshot_name = 'epoch_%d_loss_%.5f_acc_%.5f_acc-cls_%.5f_mean-iu_%.5f_fwavacc_%.5f_f1_%.5f_lr_%.10f' % (
-        epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1, optimizer.param_groups[0]['lr']
+    snapshot_name = 'run_name_%s_epoch_%d_loss_%.5f_acc_%.5f_acc-cls_%.5f_mean-iu_%.5f_fwavacc_%.5f_f1_%.5f_lr_%.10f' % (
+        channel_args.run_name, epoch, avg_loss, acc, acc_cls, mean_iu, fwavacc, f1, optimizer.param_groups[0]['lr']
     )
 
     if updated or (train_args.best_record['val_loss'] > avg_loss):
