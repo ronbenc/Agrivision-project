@@ -35,7 +35,7 @@ def evaluate(predictions, gts, num_classes):
     mean_iu = np.nanmean(iu)
     freq = conmatrix.sum(axis=ax_p) / conmatrix.sum()
     fwavacc = (freq[freq > 0] * iu[freq > 0]).sum()
-    return acc, acc_cls, mean_iu, fwavacc, np.nanmean(f1_score)
+    return acc, acc_cls, mean_iu, fwavacc, np.nanmean(f1_score), conmatrix
 
 
 

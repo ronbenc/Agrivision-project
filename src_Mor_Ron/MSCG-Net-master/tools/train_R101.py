@@ -13,6 +13,7 @@ sys.path.append(str(path_root))
 import torchvision.utils as vutils
 from lib.loss.acw_loss import *
 from tensorboardX import SummaryWriter
+import matplotlib.pyplot as plt
 import wandb
 from torch import optim
 from torch.backends import cudnn
@@ -170,6 +171,7 @@ def main():
 
                 starttime = newtime
 
+
         validate(net, val_set, val_loader, criterion, optimizer, start_epoch + new_ep, new_ep)
 
         new_ep += 1
@@ -211,7 +213,7 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
                 inputs_all, gts_all, predictions_all):
     avg_loss = val_loss.avg
 
-    acc, acc_cls, mean_iu, fwavacc, f1 = evaluate(predictions_all, gts_all, train_args.nb_classes)
+    acc, acc_cls, mean_iu, fwavacc, f1, con_matrix = evaluate(predictions_all, gts_all, train_args.nb_classes)
 
     writer.add_scalar('val_loss', avg_loss, epoch)
     writer.add_scalar('acc', acc, epoch)
@@ -241,6 +243,17 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
     if updated or (train_args.best_record['val_loss'] > avg_loss):
         torch.save(net.state_dict(), os.path.join(train_args.save_path, snapshot_name + '.pth'))
         # train_args.update_best_record(epoch, val_loss.avg, acc, acc_cls, mean_iu, fwavacc, f1)
+        # Ron - save confusion matrix
+        img_path = os.path.join(train_args.save_path, snapshot_name + '.jpg')
+        fig = plt.figure()
+        plt.matshow(con_matrix)
+        plt.title('Confusion matrix')
+        plt.colorbar()
+        plt.ylabel('True Label')
+        plt.xlabel('Predicated Label')
+        plt.savefig(img_path)
+
+
     if train_args.save_pred:
         if updated or (new_ep % 5 == 0):
             val_visual = visual_ckpt(epoch, new_ep, inputs_all, gts_all, predictions_all)
