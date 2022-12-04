@@ -171,7 +171,10 @@ def main():
 
         validate(net, val_set, val_loader, criterion, optimizer, start_epoch + new_ep, new_ep)
 
-        new_ep += 50
+        new_ep += 1
+
+        if new_ep == 30:
+            break
 
 
 def validate(net, val_set, val_loader, criterion, optimizer, epoch, new_ep):
