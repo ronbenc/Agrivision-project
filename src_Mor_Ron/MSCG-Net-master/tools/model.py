@@ -19,7 +19,13 @@ BLUE = 3
 channel_params= dict(
     NDVI = dict(alphas = torch.tensor([1, -1, 0, 0, 0, 1, 1, 0, 0, 0], dtype=torch.double), min=-1, max=1, min_clip=-1, max_clip=1),
     gNDVI = dict(alphas = torch.tensor([1, 0, -1, 0, 0, 1, 0, 1, 0, 0], dtype=torch.double), min=-1, max=1, min_clip=-1, max_clip=1),
-    SAVI = dict(alphas = torch.tensor([1, -1, 0, 0, 0, 1.5, 1.5, 0, 0, 0.75], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000) # L = 0.5
+    SAVI = dict(alphas = torch.tensor([1, -1, 0, 0, 0, 1.5, 1.5, 0, 0, 0.75], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000), # L = 0.5
+    RVI = dict(alphas = torch.tensor([0, 1, 0, 0, 0, 1, 0, 0, 0, 0], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000),
+    DVI = dict(alphas = torch.tensor([1, -1, 0, 0, 0, 0, 0, 0, 0, 0], dtype=torch.double), min=-1, max=1, min_clip=-1, max_clip=1),
+    VDVI = dict(alphas = torch.tensor([0, -1, 2, -1, 0, 0, 1, 2, 1, 0], dtype=torch.double), min=-1, max=1, min_clip=-1, max_clip=1),
+    GCC = dict(alphas = torch.tensor([0, 0, 0, 1, 0, 0, 1, 1, 1, 0], dtype=torch.double), min=0, max=1, min_clip=0, max_clip=1),
+    EVI = dict(alphas = 2.5*torch.tensor([1, -1, 0, 0, 0, 1, 6, 0, -7.5, 1], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000),
+    VARI = dict(alphas = torch.tensor([0, -1, 1, 0, 0, 0, 1, 1, -1, 0], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000)
 )
 
 
@@ -74,6 +80,19 @@ class IndexTransforms(nn.Module):
             self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["gNDVI"]))
         if args.SAVI:
             self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["SAVI"]))
+        if args.RVI:
+            self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["RVI"]))
+        if args.DVI:
+            self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["DVI"]))
+        if args.VDVI:
+            self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["VDVI"]))
+        if args.GCC:
+            self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["GCC"]))
+        if args.EVI:
+            self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["EVI"]))
+        if args.VARI:
+            self.transforms.append(AppendGenericAgriculturalIndices(**channel_params["VARI"]))
+
         if args.GAI: #pass min, max, clip...
             self.transforms.append(AppendGenericAgriculturalIndices(alphas = args.GAI))
         if args.learn:
