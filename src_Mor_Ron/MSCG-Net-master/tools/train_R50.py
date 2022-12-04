@@ -258,6 +258,8 @@ def update_ckpt(net, optimizer, epoch, new_ep, val_loss,
         img_path = os.path.join(train_args.save_path, snapshot_name + '.jpg')
         fig = plt.figure()
         plt.matshow(con_matrix)
+        for (x, y), value in np.ndenumerate(con_matrix):
+            plt.text(x, y, f"{value:.2}", va="center", ha="center", fontsize=7)
         plt.title('Confusion matrix')
         plt.colorbar()
         plt.ylabel('True Label')
