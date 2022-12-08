@@ -25,15 +25,16 @@ channel_params= dict(
     VDVI = dict(alphas = torch.tensor([0, -1, 2, -1, 0, 0, 1, 2, 1, 0], dtype=torch.double), min=-1, max=1, min_clip=-1, max_clip=1),
     GCC = dict(alphas = torch.tensor([0, 0, 0, 1, 0, 0, 1, 1, 1, 0], dtype=torch.double), min=0, max=1, min_clip=0, max_clip=1),
     EVI = dict(alphas = 2.5*torch.tensor([1, -1, 0, 0, 0, 1, 6, 0, -7.5, 1], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000),
-    VARI = dict(alphas = torch.tensor([0, -1, 1, 0, 0, 0, 1, 1, -1, 0], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000)
+    VARI = dict(alphas = torch.tensor([0, -1, 1, 0, 0, 0, 1, 1, -1, 0], dtype=torch.double), min=-10000, max=10000, min_clip=-10000, max_clip=10000),
 )
 
 
 
 class AppendGenericAgriculturalIndices(nn.Module):
     """GAI = (a0N + a1R + a2G + a3B + a4)/(a5N + a6R + a7G + a8B + a9)"""
-    def __init__(self, alphas = None, epsilon=1e-10, learn=False, std=1.0, min=None, max=None, min_clip=None, max_clip=None)->None:
+    def __init__(self, alphas = None, epsilon=1e-7, learn=False, std=1.0, min=None, max=None, min_clip=None, max_clip=None)->None:
         super().__init__()
+        # self.bn = nn.BatchNorm2d(1)
         if alphas == None:
             alphas = torch.normal(mean=0.0, std=std, size=(10, ))
 
@@ -60,12 +61,14 @@ class AppendGenericAgriculturalIndices(nn.Module):
         red_band, green_band, blue_band, nir_band = x[:, RED, :, :], x[:, GREEN, :, :], x[:, BLUE, :, :], x[:, NIR, :, :]
         nomin = self.alphas[0]*nir_band + self.alphas[1]*red_band + self.alphas[2]*green_band + self.alphas[3]*blue_band + self.alphas[4]
         denom = self.alphas[5]*nir_band + self.alphas[6]*red_band + self.alphas[7]*green_band + self.alphas[8]*blue_band + self.alphas[9]
-        index = nomin/(denom + self.epsilon)
+        # index = nomin/(denom + self.epsilon)
+        index = nomin/(torch.clamp(denom, min=self.epsilon))
 
         if self.max and self.min:
             index = self._min_max_normalize(index)
 
         index = index.unsqueeze(self.dim)
+        # index = self.bn(index) # batch norm after non-linearity
         y = torch.cat((x, index), dim=self.dim)
         return y
 
@@ -117,7 +120,7 @@ def load_model(args, name='MSCG-Rx50', classes=7, node_size=(32,32)):
     if name == 'MSCG-Rx50':
         net = rx50_gcn_3head_4channel(args=args, out_channels=classes)
     elif name == 'MSCG-Rx101':
-        net = rx101_gcn_3head_4channel(out_channels=classes)
+        net = rx101_gcn_3head_4channel(args=args, out_channels=classes)
     else:
         print('not found the net')
         return -1
@@ -170,9 +173,6 @@ class rx50_gcn_3head_4channel(nn.Module):
         # add prepocess channels
 
         x = self.index_transforms_layer(x)
-        for i, param in enumerate(self.index_transforms_layer.parameters()):
-            print(f"Parameter #{i} of shape {param.shape}:\n{param.data}\n")
-        # x = x[:, -1, :, :].unsqueeze(1) # intrestin experience to bottleneck the learnable channel
         
 
         x_size = x.size()
@@ -218,7 +218,7 @@ class rx50_gcn_3head_4channel(nn.Module):
 
 
 class rx101_gcn_3head_4channel(nn.Module):
-    def __init__(self, out_channels=7, pretrained=True,
+    def __init__(self, args, out_channels=7, pretrained=True,
                  nodes=(32, 32), dropout=0,
                  enhance_diag=True, aux_pred=True):
         super(rx101_gcn_3head_4channel, self).__init__()  # same with  res_fdcs_v5
@@ -228,10 +228,13 @@ class rx101_gcn_3head_4channel(nn.Module):
         self.num_cluster = out_channels
 
         resnet = se_resnext101_32x4d()
+        self.index_transforms_layer = IndexTransforms(args)
         self.layer0, self.layer1, self.layer2, self.layer3, = \
             resnet.layer0, resnet.layer1, resnet.layer2, resnet.layer3
 
-        self.conv0 = torch.nn.Conv2d(4, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+        conv_in_channels = 4 + self.index_transforms_layer.number_of_transforms
+
+        self.conv0 = torch.nn.Conv2d(conv_in_channels, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 
         for child in self.layer0.children():
             for param in child.parameters():
@@ -255,6 +258,7 @@ class rx101_gcn_3head_4channel(nn.Module):
         weight_xavier_init(self.graph_layers1, self.graph_layers2, self.scg)
 
     def forward(self, x):
+        x = self.index_transforms_layer(x)
         x_size = x.size()
 
         gx = self.layer3(self.layer2(self.layer1(self.layer0(x))))

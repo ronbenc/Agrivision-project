@@ -1,9 +1,14 @@
 from __future__ import division
+import sys
+from pathlib import Path
+path_root = Path(__file__).parents[1]
+sys.path.append(str(path_root))
 
 from tools.model import load_model
 
 from config.configs_kf import *
 from lib.utils.visual import *
+
 
 import torchvision.transforms as st
 from sklearn.metrics import confusion_matrix
@@ -14,24 +19,36 @@ from tools.ckpt import *
 import time
 import itertools
 
+from utils import *
 
 
-output_path = os.path.join('../submission', 'results_ckpt1_ckpt2_tta')
+
+output_path = os.path.join('../submission', 'final_submission_tta')
 
 def main():
     check_mkdir(output_path)
     nets = []
-
-    net1 = get_net(ckpt1)  # MSCG-Net-R50
-    # net2 = get_net(ckpt2)  # MSCG-Net-R101
-    # net3 = get_net(ckpt3)  # MSCG-Net-R101
+    # for each one of your selected snapshots make sure you send get_net() the same added flags you did when training.
+    r50_args = parse_args()
+    r101_args = parse_args()
+    r50_args.NDVI=True
+    r50_args.gNDVI=True
+    r50_args.SAVI=True
+    net1 = get_net(args=r50_args, ckpt=ckpt1)  # MSCG-Net-R50 + NDVI + gNDVI + SAVI
+    net2 = get_net(args = r101_args, ckpt=ckpt2)  # MSCG-Net-R101 + SAVI + EVI
+    # net3 = get_net(ckpt3)  # MSCG-Net-R101 (not used in final submission , optional...)
 
     nets.append(net1)
-    # nets.append(net2)
+    nets.append(net2)
     # nets.append(net3)
 
+    # article writers scores 
     # ckpt1 + ckpt2, test score 0.599,
     # ckpt1 + ckpt2 + ckpt3, test score 0.608
+
+    # our scores:
+    # ckpt1 + ckpt2, test score ???,
+    
 
     test_files = get_real_test_list(bands=['NIR','RGB'])
     tta_real_test(nets, stride=600, batch_size=1,
@@ -130,7 +147,8 @@ def tta_real_test(nets, all=False, labels=land_classes, norm=False,
         pred = np.argmax(pred, axis=-1)
 
         for key in ['boundaries', 'masks']:
-            pred = pred * np.array(cv2.imread(os.path.join('/media/liu/diskb/data/Agriculture-Vision/test', key, id+'.png'), -1) / 255, dtype=int)
+        # change to your testset location 
+            pred = pred * np.array(cv2.imread(os.path.join('/home/ronbenc/Agrivision-project/dataset/test', key, id+'.png'), -1) / 255, dtype=int)
         filename = './{}.png'.format(id)
         cv2.imwrite(os.path.join(output_path, filename), pred)
 

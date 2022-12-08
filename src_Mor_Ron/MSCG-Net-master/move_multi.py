@@ -1,6 +1,7 @@
 import os
 import shutil
 
+# this scripts purpose is to remove duplicates of images in the dataset
 DIR = '/home/ronbenc/Agrivision-project/dataset/train/images/nir'
 multi_dir = '/home/ronbenc/Agrivision-project/dataset/train/images/train_multi_nir'
 os.mkdir(multi_dir)

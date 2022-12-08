@@ -81,7 +81,7 @@ def generate_wandb_name():
     return "test_run"
 
 def init_wandb(run_name):
-    wandb.init(project = "agrivision", entity = "mor_ron")
+    wandb.init(entity = "your entity")
     wandb.run.name = run_name
     wandb.run.save()
 
