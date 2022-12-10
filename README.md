@@ -2,6 +2,14 @@
 
 This repo in cloned from https://github.com/samleoqh/MSCG-Net.
 All right reserved to the authors of the original article.
+https://openaccess.thecvf.com/content_CVPRW_2020/papers/w5/Liu_Multi-View_Self-Constructing_Graph_Convolutional_Networks_With_Adaptive_Class_Weighting_Loss_CVPRW_2020_paper.pdf
+
+
+# Agriculture-Vision dataset and contest
+https://www.agriculture-vision.com/agriculture-vision-2020/dataset
+
+https://github.com/SHI-Labs/Agriculture-Vision
+
 
 ## Contribution (only in src_mor_ron/MSCG_Net):
 - added support for weights and biases (wandb)
